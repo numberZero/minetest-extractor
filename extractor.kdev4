@@ -1,0 +1,4 @@
+[Project]
+Name=extractor
+Manager=KDevCMakeManager
+VersionControl=kdevgit
