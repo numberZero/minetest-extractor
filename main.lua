@@ -1,0 +1,6 @@
+dofile("/self/mtstub.lua")
+-- core.load_mod("mesecons", "mesecons")
+-- core.load_mod(nil, "pipeworks")
+-- core.load_mod("technic", "technic")
+-- dofile("../mods/pipeworks/init.lua")
+-- dofile("../mods/technic/technic/init.lua")
