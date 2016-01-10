@@ -47,7 +47,7 @@ int main(int argc, char **argv)
 	L = lua;
 	fs = new MyVFS(base, realpath(base + "/../base-minetest"));
 	indexMods();
-	runlua("init.lua");
+	runlua("script/init.lua");
 	try
 	{
 		std::clog << "=== Loading mods ===" << std::endl;
@@ -62,7 +62,7 @@ int main(int argc, char **argv)
 	{
 		std::clog << "Unknown exception caught" << std::endl;
 	}
-	runlua("main.lua");
+	runlua("script/main.lua");
 	delete fs;
 	return 0;
 }
