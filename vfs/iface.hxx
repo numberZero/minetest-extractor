@@ -4,8 +4,10 @@
 #include <string>
 #include <vector>
 
+typedef char Byte;
 typedef std::string FileName;
-typedef std::vector<std::uint8_t> ByteArray;
+typedef std::string ByteArray;
+// typedef std::vector<std::uint8_t> ByteArray;
 
 class INode;
 class IFile;

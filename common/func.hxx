@@ -5,7 +5,7 @@
 #include <dirent.h>
 
 bool fexists(std::string const& filename);
-std::vector<unsigned char> readfile(std::string const& filename);
+std::string readfile(std::string const& filename);
 
 std::string basename(std::string path);
 std::string dirname(std::string path);

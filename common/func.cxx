@@ -10,17 +10,17 @@ bool fexists(std::string const& filename)
 	return true;
 }
 
-std::vector< unsigned char > readfile(const std::string& filename)
+std::string readfile(const std::string& filename)
 {
 	FILE *file = fopen(filename.c_str(), "rb");
 	if(!file)
-		return{};
-	std::vector<unsigned char> data;
+		throw 0;
 	fseek(file, 0, SEEK_END);
-	data.resize(ftell(file));
+	long len = ftell(file);
+	char* buffer = new char[len];
 	fseek(file, 0, SEEK_SET);
-	unsigned char* pdata = data.data();
-	long rem = data.size();
+	char* pdata = buffer;
+	long rem = len;
 	for(;;)
 	{
 		long read = fread(pdata, 1, rem, file);
@@ -30,7 +30,8 @@ std::vector< unsigned char > readfile(const std::string& filename)
 		rem -= read;
 	}
 	fclose(file);
-	data.resize(pdata - data.data());
+	std::string data(buffer, pdata - buffer);
+	delete[] buffer;
 	return std::move(data);
 }
 

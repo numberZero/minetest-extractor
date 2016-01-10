@@ -16,6 +16,10 @@ Lua::Lua()
 	lua_setglobal(state, "math");
 	luaopen_io(state);
 	lua_setglobal(state, "io");
+	luaopen_os(state);
+	lua_setglobal(state, "os");
+	luaopen_debug(state);
+	lua_setglobal(state, "debug");
 
 // core
 	lua_createtable(state, 0, 0);

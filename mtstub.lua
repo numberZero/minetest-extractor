@@ -6,15 +6,51 @@ core.mods_root = "/mod" -- MODSROOT
 core.builtin_root = "/builtin" -- "builtin"
 core.print = print
 core.modpathes = {}
+core.modnames = {}
 
 function setfenv(...)
 -- 	core.log("setfenv")
 end
 
-debug = {}
+function table.foreach(table, func)
+	for k, v in ipairs(table) do
+		func(k, v)
+	end
+end
 
-function debug.getinfo()
-	return {}
+function ItemStack(text)
+	local t = string.split(text, " ")
+	return {
+		name = t[1],
+		count = t[2] or 1,
+		is_empty = function(self)
+				return (self == nil) or (self.count == 0)
+			end,
+		get_name = function(self)
+				return self.name
+			end
+	}
+end
+
+function Settings(path)
+	return {
+		to_table = function(self)
+			return self
+		end,
+		get = function(self, key)
+			return self[key]
+		end,
+		get_bool = function(self, key)
+			if self:get(key) then
+				return true
+			else
+				return false
+			end
+		end,
+		set = function(self, key, value)
+			self[key] = value
+		end
+	}
 end
 
 -- Register
@@ -61,6 +97,12 @@ function PerlinNoise(seed, octaves, persistence, scale)
 	core.log("PerlinNoise class")
 end
 
+function core.add_particlespawner()
+end
+
+function core.get_voxel_manip()
+end
+
 function core.get_builtin_path()
 	return core.builtin_root
 end
@@ -72,7 +114,13 @@ end
 
 function core.setting_get(key)
 --	print("Setting: " .. key)
+	if key == "dedicated_server_step" then
+		return 0.05
+	end
 	return nil
+end
+
+function core.setting_set(key, value)
 end
 
 function core.get_worldpath()
@@ -110,6 +158,7 @@ function core.real_load_mod(name, path)
 	core.modname = name
 	core.modpath = path
 	core.modpathes[name] = path
+	core.modnames[#core.modnames + 1] = name
 	dofile(path .. "/init.lua")
 end
 
@@ -132,6 +181,7 @@ local scriptpath = core.get_builtin_path()..DIR_DELIM
 local commonpath = scriptpath.."common"..DIR_DELIM
 local gamepath = scriptpath.."game"..DIR_DELIM
 
+dofile(commonpath.."strict.lua")
 dofile(commonpath.."serialize.lua")
 dofile(commonpath.."misc_helpers.lua")
 dofile(commonpath.."vector.lua")
@@ -162,9 +212,10 @@ dofile(gamepath.."statbars.lua")
 
 core.register_on_mapgen_init = function(func) end
 core.get_modpath = function(name) return core.modpathes[name] end
+core.get_modnames = function(name) return core.modnames end
 
-function __builtin__load_mod(name, path)
-	core.real_load_mod(name, path)
+function __builtin__load_mod(name)
+	core.real_load_mod(name, "/mod/" .. name)
 end
 
 minetest = core

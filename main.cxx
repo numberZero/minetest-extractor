@@ -32,60 +32,12 @@ void runlua(std::string const& filename)
 	}
 }
 
-std::map<std::string, std::string> mods;
-
-void addmod(std::string const& name, std::string const& path)
-{
-	if(mods.find(name) != mods.end())
-		throw std::runtime_error("Mod conflict: " + name);
-	std::clog << "mod found: " << name << " at " << path << std::endl;
-	mods[name] = path;
-}
-
-void addmods(std::string const& dir)
-{
-	std::list<std::string> dirs;
-	listdir(dir, std::back_inserter(dirs));
-	for(std::string const& name: dirs)
-	{
-		if(name[0] == '.')
-			continue;
-		std::string path = dir + "/" + name;
-		if(fexists(path + "/init.lua"))
-			addmod(name, path);
-	}
-}
-
-void addmods2(std::string const& root)
-{
-	std::list<std::string> dirs;
-	listdir(root, std::back_inserter(dirs));
-	for(std::string const& name: dirs)
-	{
-		if(name[0] == '.')
-			continue;
-		std::string path = root + "/" + name;
-		if(fexists(path + "/init.lua"))
-			addmod(name, path);
-		else if(fexists(path + "/modpack.txt"))
-		{
-			std::clog << "-- modpack found: " << name << std::endl;
-			addmods(path);
-			std::clog << "-- modpack end" << std::endl;
-		}
-	}
-}
-
 void indexMods()
 {
-	PVirtualDirectory dir_mod = std::dynamic_pointer_cast<VirtualDirectory>(fs->get("/mod"));
 	Mod::adddir(GAMEROOT + "/mods");
+	Modpack::adddir(GAMEROOT + "/mods");
 	Mod::adddir(MODSROOT);
-	for(auto const& pmod: Mod::getindex())
-	{
-		PSandboxDirectory dir = std::make_shared<SandboxDirectory>(pmod.second->getpath());
-		dir_mod->addEntry(pmod.second->getname(), dir);
-	}
+	Modpack::adddir(MODSROOT);
 }
 
 int main(int argc, char **argv)
@@ -95,7 +47,7 @@ int main(int argc, char **argv)
 	L = lua;
 	fs = new MyVFS(base, realpath(base + "/../base-minetest"));
 	indexMods();
-	runlua("main.lua");
+	runlua("init.lua");
 	try
 	{
 		std::clog << "=== Loading mods ===" << std::endl;
@@ -110,6 +62,7 @@ int main(int argc, char **argv)
 	{
 		std::clog << "Unknown exception caught" << std::endl;
 	}
+	runlua("main.lua");
 	delete fs;
 	return 0;
 }

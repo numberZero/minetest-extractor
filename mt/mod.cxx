@@ -4,6 +4,7 @@
 #include <list>
 #include <stdexcept>
 #include "common/func.hxx"
+#include "vfs/myvfs.hxx"
 
 #define THROW_NOTIMPL	throw std::logic_error("Method not implemented: " + std::string(__PRETTY_FUNCTION__))
 
@@ -47,6 +48,8 @@ Mod::Mod(std::string const& modname, std::string const& modpath) :
 	}
 	else
 		std::clog << "Can't find the dependency file at " << modpath + "/depends.txt" << std::endl;
+	PSandboxDirectory dir = std::make_shared<SandboxDirectory>(path);
+	fs->mod->addEntry(name, dir);
 }
 
 void Mod::real_load(lua_State* L)
@@ -55,8 +58,7 @@ void Mod::real_load(lua_State* L)
 	state = ModState::Running;
 	lua_getglobal(L, "__builtin__load_mod");
 	lua_pushstring(L, name.c_str());
-	lua_pushstring(L, path.c_str());
-	int err = lua_pcall(L, 2, 1, 0);
+	int err = lua_pcall(L, 1, 1, 0);
 	if(err)
 	{
 		std::size_t len;
